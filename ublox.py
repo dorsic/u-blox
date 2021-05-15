@@ -8,8 +8,8 @@ import debugpy
 # Pause the program until a remote debugger is attached
 #debugpy.wait_for_client()
 
-sdev = '/dev/ttyS0'
-baudrate = 9600
+sdev = '/dev/ttyAMA0'
+baudrate = 115200
 
 def get_gnss(gps):
     try:
@@ -71,23 +71,32 @@ def ubx_stream(gps):
             print('interrupted')
             return
         except:
-            print("Unknown error")            
+            pass
+            #print("Unknown error")
 
 def configure(gps):
     try:
+        # UBX-NAV-TIMEGPS
         ubx_msg = ublox_gps.sparkfun_predefines.CFG_CLS[gps.cfg_ms.get('MSG')]
         ubx_msg.set_values({"msgClass": 0x01, "msgID": 0x20, "rate": 1})        
         msg = gps.send_message(ublox_gps.sparkfun_predefines.CFG_CLS, gps.cfg_ms.get('MSG'), ubx_msg.payload())
         print(msg)
 
+        # UBX-TIM-TM2
         ubx_msg = ublox_gps.sparkfun_predefines.CFG_CLS[gps.cfg_ms.get('MSG')]
         ubx_msg.set_values({"msgClass": 0x0D, "msgID": 0x03, "rate": 1})
         msg = gps.send_message(ublox_gps.sparkfun_predefines.CFG_CLS, gps.cfg_ms.get('MSG'), ubx_msg.payload())
         print(msg)
 
+        # UBX-TIM-TP
+        ubx_msg = ublox_gps.sparkfun_predefines.CFG_CLS[gps.cfg_ms.get('MSG')]
+        ubx_msg.set_values({"msgClass": 0x0D, "msgID": 0x01, "rate": 1})
+        msg = gps.send_message(ublox_gps.sparkfun_predefines.CFG_CLS, gps.cfg_ms.get('MSG'), ubx_msg.payload())
+        print(msg)
+
+
     except (ValueError, IOError) as err:
         print(err)
-
 
 
 def main():
