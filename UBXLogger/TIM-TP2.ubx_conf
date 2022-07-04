@@ -1,0 +1,25 @@
+# Config changes format version 1.0
+# created by u-center version 20.10 at 21:11:57 on Sunday, 10 Apr 2022
+# Sets TP1 to 1 PPS 50ms long pulse aligned with GPS when locked
+# 20ns antenna delay configured
+# 20ns user delay added
+# If unlocked, no GNSS available then 50ms pulses at 10 Hz are outputed
+
+[del]
+  RAM CFG-MSGOUT-UBX_MON_COMMS_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_HW2_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_HW3_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_HW_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_IO_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_MSGPP_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_RF_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_RXBUF_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_RXR_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_SPAN_UART1                 # write value 0            disable monitoring messages
+  RAM CFG-MSGOUT-UBX_MON_TXBUF_UART1                 # write value 0            disable monitoring messages
+[set]
+  RAM CFG-MSGOUT-UBX_TIM_TP_UART1 1             # write value 1              to item id 0x2091017e in layer 0
+  RAM CFG-MSGOUT-UBX_RXM_TM_UART1 1             # write value 1              to item id 0x20910611 in layer 0
+  RAM CFG-MSGOUT-UBX_RXM_MEASX_UART1 1             # write value 1           to item id 0x20910205 in layer 0
+  RAM CFG-MSGOUT-UBX_RXM_RAWX_UART1 1             # write value 1            to item id 0x209102a5 in layer 0
+  

@@ -236,5 +236,6 @@ class RTCM3:
 
 
 filename = '/Users/dorsic/Downloads/compare/mms.rtcm3'
+filename = 'serial_raw_log.mix'
 rtcm = RTCM3()
 rtcm.decode_file(filename)

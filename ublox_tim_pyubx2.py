@@ -2,7 +2,8 @@ from serial import Serial
 import pyubx2
 
 class Ublox_TIM(object):
-    def __init__(self, serialPort='/dev/ttyAMA0', baudRate=115200):
+    
+    def __init__(self, serialPort='dev/ttyAMA0', baudRate=115200):
         stream =  Serial(serialPort, baudRate, timeout=3)
         self.reader = pyubx2.UBXReader(stream)
 

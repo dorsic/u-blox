@@ -429,7 +429,7 @@ FILTER_UBX = 2
 FILTER_RTCM = 3
 
 mode = SPLIT_MIX
-filename = '/Users/dorsic/Development/github/u-blox/measurements/vrchslatina/ublox-e425bf84-31c0-432b-8726-07bf98a02076.mix'
+filename = '/Users/dorsic/Development/data-ublox/palisady/ublox-P8-balkonNW.mix'
 #outputfilename = '/Users/dorsic/Development/github/u-blox/measurements/vrchslatina/ublox-9f659cc9-5572-4c47-bf35-1ad5a5c13857'
 outputfilename = filename[:-4]
 filtered_ubx_in = outputfilename + '.ubx'

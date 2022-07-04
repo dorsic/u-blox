@@ -1,0 +1,11 @@
+[Unit]
+Description=Connects to ublox via serial port and forwards TIM-TM2 ublox messages to MQTT /rarach/timelab/ublox/timtp topic.
+Alter=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/pi/ublox/serial_raw_log.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
