@@ -62,13 +62,29 @@ class UBXLogger():
 
     def _swap_mjd_files(self, mjd):
         self.file_mjd = mjd
-        for f in self.file:
-            if self.file[f]:
-                self.file[f].close()
-                self.file[f] = self.file[f][:-4] + '-' + str(mjd) + self.file[f][-4:]
-                if not os.path.exists(self.file[f]):
-                    self._writeheader(f, self.file[f])
-                self.file[f] = open(self.file[f], 'a')
+        with open('extralogfile.txt', 'a') as flog:
+            flog.write("looping files...\n")
+            flog.flush()                    
+            for f in self.file:
+                if self.file[f]:
+                    self.file[f].close()
+                    flog.write("file closed. ")
+                    flog.flush()                    
+                    self.file[f] = self.file[f][:-4] + '-' + str(mjd) + self.file[f][-4:]
+                    flog.write(", set new filename")
+                    flog.flush()                    
+                    self.file[f] = open(self.file[f], 'a')
+                    if not os.path.exists(self.file[f]):
+                        self.file[f] = open(self.file[f], 'a')
+                        flog.write(", new file opened")
+                        flog.flush()                    
+                        self._writeheader(f, self.file[f])
+                        flog.write(", header written\n")
+                        flog.flush()                    
+                    else:
+                        self.file[f] = open(self.file[f], 'a')
+                        flog.write(", new file opened\n")
+                        flog.flush()                    
 
     @staticmethod
     def is_ubx_message(ubx_msg):
@@ -196,7 +212,7 @@ class UBXLogger():
             ))
             self.file['navsat'].flush()
         except:
-            print("ERRROR")
+            print("ERROR, log_nav_sat")
             pass
 
     def log_nav_clock(self, args):
@@ -207,24 +223,32 @@ class UBXLogger():
             output = self.separator.join(['{' + str(i) + '}' for i in range(len(msg))])
             self.file['clock'].write((output + '\n').format( *msg.values() ))
         except:
+            print("ERROR, log_nav_clock")
             pass
 
     def log_timepulse(self, args):
-        try:
-            if not self.file['timepulse']:
-                return
-            msg = args[0]
-            if (self.file_mjd != int(msg['mjd'])):
-                self._swap_mjdfiles(int(msg['mjd']))
+        if not self.file['timepulse']:
+            return
+        msg = args[0]
+        if (self.file_mjd != int(msg['mjd'])):
+            with open('extralogfile.txt', 'a') as f:
+                f.write("swapping mjd files from ")
+                f.flush()                    
+                f.write(str(self.file_mjd))
+                f.flush()
+                f.write(" to " + str(int(msg['mjd'])) + "\n")
+                f.flush()
+                self._swap_mjd_files(int(msg['mjd']))
+                f.write('Done.\n')
 
-            template = self.separator.join(['{' + str(i) + '}' for i in range(5)])        
-            self.file['timepulse'].write((template + '\n').format(
-                msg['lts'], msg['ts'], msg['mjd'], msg['qerr'], msg['timebase']
-            ))
-            self.file['timepulse'].flush()
-        except:
-            pass
-        pass
+        template = self.separator.join(['{' + str(i) + '}' for i in range(5)])        
+        self.file['timepulse'].write((template + '\n').format(
+            msg['lts'], msg['ts'], msg['mjd'], msg['qerr'], msg['timebase']
+        ))
+        self.file['timepulse'].flush()
+#    except:
+#        print("ERROR, log_timepulse")
+#        pass
 
     def log_rawx(self, args):
         try:
@@ -239,13 +263,18 @@ class UBXLogger():
                     )
                 )
         except:
+            print("ERROR, log_rawx")
             pass
 
     def log_survey_in(self, args):
         try:
+            if self.survey_done_written:
+                # after survey there is no change
+                return
+
             msg = args[0]
-            if (msg['valid'] == 0):
-                print(msg)
+            print(msg)
+            print("Spatial deviation: {0:.3f} m".format((msg['meanV']**0.5)/1000.0))
 
             if not self.file['svin']:
                 return
@@ -254,10 +283,10 @@ class UBXLogger():
                 msg['lts'], msg['ts'], msg['mjd'], msg['dur'], msg['meanX'], msg['meanY'], msg['meanZ'], msg['meanV'], 
                     msg['obs'], msg['valid'], msg['active'], msg['reserved1']
             ))
-            if (msg['valid'] == 0):         # make the update visible
-                self.file['svin'].flush()
+            self.file['svin'].flush()   # make the update immediately visible
         except:
-            pass        
+            print("ERROR, log_survey_in")
+            pass     
 
     def log_survey_done(self, args):
         if self.survey_done_written:
@@ -271,4 +300,5 @@ class UBXLogger():
             self.file['svin'].flush()
             self.survey_done_written = True
         except:
-            pass        
+            print("ERROR, log_survey_done")
+            pass   

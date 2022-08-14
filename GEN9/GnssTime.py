@@ -4,6 +4,7 @@ import numpy as np
 
 class GnssTime(object):
     START = datetime(2021, 1, 3, 0, 0, 0, 0, tzinfo=timezone.utc)
+    gps_leapsecs = 18
 
     @staticmethod
     def week_ts(weekNumber):
@@ -13,8 +14,8 @@ class GnssTime(object):
     
     # this is loosing precision to about 10 ns !!
     @staticmethod
-    def timestamp(wn, towMs, towSubMs):
-        return GnssTime.week_ts(wn) + towMs*1.0e-3 + towSubMs*1.0e-9
+    def timestamp(wn, towMs, towSubMs, leapsecs=18):
+        return GnssTime.week_ts(wn) + towMs*1.0e-3 + towSubMs*1.0e-9 - leapsecs
 
     @staticmethod
     def timestamp2(year, dayofyear, hour, minute, second):
@@ -30,29 +31,29 @@ class GnssTime(object):
         return datetime(year, month, day, hour, minute, second, millis, tzinfo=timezone.utc).timestamp()
         
     @staticmethod
-    def timestamp5(wn, tow):
-        return GnssTime.week_ts(wn) + tow
+    def timestamp5(wn, tow, leapsecs=18):
+        return GnssTime.week_ts(wn) + tow - leapsecs
 
     @staticmethod
     def tow(towMs, towSubMs, offset=0.0):
         return towMs*1.0e-3 + towSubMs*1.0e-9 + offset
 
     @staticmethod
-    def tow_components(utctimestamp):
-        wn = GnssTime.week_fromts(utctimestamp)
-        tow = GnssTime.tow_fromts(utctimestamp)
+    def tow_components(utctimestamp, leapsecs=18):
+        wn = GnssTime.week_fromts(utctimestamp, leapsecs)
+        tow = GnssTime.tow_fromts(utctimestamp, leapsecs)
         towMs = np.int(tow * 1.0e3)
         towSubMs = ((tow-np.int(tow))*1.0e3 - np.int((tow-np.int(tow))*1.0e3)) * 1.0e6
         return (wn, towMs, towSubMs)
     
     @staticmethod
-    def tow_fromts(utctimestamp):
-        startweek_ts = GnssTime.week_ts(GnssTime.week_fromts(utctimestamp))
-        return utctimestamp - startweek_ts
+    def tow_fromts(utctimestamp, leapsecs=18):
+        startweek_ts = GnssTime.week_ts(GnssTime.week_fromts(utctimestamp, leapsecs))
+        return utctimestamp + leapsecs - startweek_ts
     
     @staticmethod
-    def week_fromts(utctimestamp):
-        return 2139 + np.int((datetime.fromtimestamp(utctimestamp, tz=timezone.utc)-GnssTime.START).days/7)
+    def week_fromts(utctimestamp, leapsecs=18):
+        return 2139 + np.int((datetime.fromtimestamp(utctimestamp+leapsecs, tz=timezone.utc)-GnssTime.START).days/7)
 
     @staticmethod
     def mjd(utctimestamp):
@@ -62,9 +63,9 @@ class GnssTime(object):
             return 59217.0 + td.days + (td.seconds+td.microseconds*1.0e-6)/86400.0
 
     @staticmethod
-    def mjd2(wn, towMs, towSubMs):
+    def mjd2(wn, towMs, towSubMs, leapsecs=18):
         if wn and not np.isnan(wn):
-            return GnssTime.mjd(GnssTime.week_ts(wn)) + towMs*1.0e-3/86400.0 + towSubMs*1.0e-9/86400.0
+            return GnssTime.mjd(GnssTime.week_ts(wn)) + (towMs-leapsecs*1.0e3)*1.0e-3/86400.0 + towSubMs*1.0e-9/86400.0
 
     @staticmethod
     def now():

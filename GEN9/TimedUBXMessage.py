@@ -7,6 +7,7 @@ class TimedUBXMessage(UBXMessage):
         super().__init__(ubx_msg.msg_cls, ubx_msg.msg_id, ubx_msg.msgmode, payload=ubx_msg.payload)
 
     def _parseTime(self):
+        # take week from message if available, if not take from constructor, else take actual
         week = self.week if (hasattr(self, 'week')) else GnssTime.week_fromts(GnssTime.now())
         towms = self.tow*1.0e3 if (hasattr(self, 'tow')) else 0.0
         towms = self.iTOW if (hasattr(self, 'iTOW')) else towms
