@@ -79,7 +79,8 @@ class UbloxMessageLogger():
              'timepulse': ['LCL', 'TS', 'MJD', 'QERR', 'TIMEBASE'],
 #             'timepulse': ['LCL', 'TS', 'MJD', 'QERR', 'TIMEBASE', 'CLKBIAS', 'CLKDRIFT', 'TACC', 'FACC'],
              'pseudorange': ['LCL', 'TS', 'MJD', 'SAT', 'SIG', 'PSEUDORANGE', 'CARRIERPHASE', 'DOPPLER', 'CNO', 
-                                'PRSTD', 'CPSTD', 'DOSTD', 'LOCKTIME', 'PRVALID', 'CPVALID', 'HALFCYC', 'SUBHALFCYC'],
+                                'PRSTD', 'CPSTD', 'DOSTD', 'LOCKTIME', 'PRVALID', 'CPVALID', 'HALFCYC', 'SUBHALFCYC', 
+                                'LEAPS', 'LEAPSEC', 'CLKRESET', 'RESERVED1'],
              'navsat': ['LCL', 'TS', 'MJD', 'SAT', 'ELEV', 'AZIM', 'CNO', 'PRRES', 'QUALITYIND', 
                                 'SVUSED', 'HEALTH', 'DIFFCORR', 'SMOOTHED', 'ORBITSOURCE', 'EPHAVAIL', 'ALMAVAIL', 'ANOAVAIL', 'AOPAVAIL',
                                 'SBASCORRUSED', 'RTCMCORRUSED', 'SLASCORRUSED', 'SPARTNCORRUSED', 'PRCORRUSED', 'CRCORRUSED', 'DOCORRUSED'],
@@ -135,7 +136,8 @@ class UbloxMessageLogger():
         for a in msg['meas']:
             self.files['pseudorange'].logdata([
                 msg['lts'], msg['ts'], msg['mjd'], a['prn'], a['sig'], a['prMes'], a['cpMes'], a['doMes'], a['cno'],
-                    a['prStd'], a['cpStd'], a['doStd'], a['locktime'], a['prValid'], a['cpValid'], a['halfCyc'], a['subHalfCyc']
+                    a['prStd'], a['cpStd'], a['doStd'], a['locktime'], a['prValid'], a['cpValid'], a['halfCyc'], a['subHalfCyc'],
+                    msg['leapS'], msg['leapSec'], msg['clkReset'], msg['reserved1']
                 ], mjd=msg['mjd']
             )
 

@@ -12,7 +12,7 @@ class UbloxProcessorEventType(Enum):
     SURVEY_DONE = auto()
 
 class UbloxProcessor():
-    gnssPrefixMap = {0: 'G', 1: 'S', 2: 'E', 3: 'B', 5: 'Y', 5: 'J', 6: 'R', -1: 'X'}
+    gnssPrefixMap = {0: 'G', 1: 'S', 2: 'E', 3: 'C', 5: 'Y', 5: 'J', 6: 'R', -1: 'X'}
     utcStdMap = {0: 'UTC', 1: 'UTC(CRL)', 2: 'UTC(NIST)', 3: 'UTC(USNO)', 4: 'UTC(BIPM)', 5: 'UTC(EU)', 6: 'UTC(SU)', 15: 'UTC()', -1: 'UNKN'}
     
     sigMap = {0: 'G1C', 3: 'G2L', 4: 'G2S', 20: 'E1C', 21: 'E1B', 25: 'E7I', 26: 'E7Q', 
@@ -130,7 +130,9 @@ class UbloxProcessor():
         if (tubx_msg.identity != 'RXM-RAWX'):
                 return
         lts = GnssTime.now()
-        msg = {'lts': lts, 'ts': tubx_msg.timestamp, 'mjd': tubx_msg.mjd, 'meas': []}
+        msg = {'lts': lts, 'ts': tubx_msg.timestamp, 'mjd': tubx_msg.mjd, 
+                'leapS': tubx_msg.leapS, 'leapSec': tubx_msg.leapSec, 'clkReset': tubx_msg.clkReset,
+                'reserved1': tubx_msg.reserved1, 'meas': []}
         for i in range(1, tubx_msg.numMeas+1):
             si = "{0:02}".format(i)
             meas = {}
@@ -138,8 +140,7 @@ class UbloxProcessor():
                     'prValid', 'cpValid', 'halfCyc', 'subHalfCyc', 'reserved2']:
                 meas[att] = tubx_msg.prop(att, si)
 
-            meas['prn'] = self.gnssPrefixMap[meas['gnssId']] if meas['gnssId'] in self.gnssPrefixMap else self.gnssPrefixMap[-1] + \
-                              "{0:02}".format(meas['svId']) 
+            meas['prn'] = (self.gnssPrefixMap[meas['gnssId']] if meas['gnssId'] in self.gnssPrefixMap else self.gnssPrefixMap[-1]) + "{0:02}".format(meas['svId']) 
             if (meas['svId'] == 0):
                 meas['sig'] = self.sigMap[999]
             else:

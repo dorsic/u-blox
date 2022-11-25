@@ -1,3 +1,6 @@
+GEN9/data/
+**/.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -127,3 +130,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+pseudorange-59806-2h.rno
+GEN9/.DS_Store
+.DS_Store
+GEN9/timepulse-59802.txt
+GEN9/conf/BALK_STRED.conf

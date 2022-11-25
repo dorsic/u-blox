@@ -15,7 +15,7 @@ class GnssTime(object):
     # this is loosing precision to about 10 ns !!
     @staticmethod
     def timestamp(wn, towMs, towSubMs, leapsecs=18):
-        return GnssTime.week_ts(wn) + towMs*1.0e-3 + towSubMs*1.0e-9 - leapsecs
+        return GnssTime.week_ts(wn) + towMs*1.0e-3 + towSubMs*1.0e-9
 
     @staticmethod
     def timestamp2(year, dayofyear, hour, minute, second):
@@ -32,7 +32,7 @@ class GnssTime(object):
         
     @staticmethod
     def timestamp5(wn, tow, leapsecs=18):
-        return GnssTime.week_ts(wn) + tow - leapsecs
+        return GnssTime.week_ts(wn) + tow
 
     @staticmethod
     def tow(towMs, towSubMs, offset=0.0):

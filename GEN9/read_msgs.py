@@ -17,8 +17,8 @@ configs = [os.path.join(confdir, 'TP1.conf'),
           # os.path.join(confdir, 'BALK_STRED.conf'),
           # os.path.join(confdir, 'zla_poloha.conf')
           ]
-f_timepulse = 'timepulse.txt'
-f_rawx = 'rawx.txt'
+
+f_raw = os.path.join(logdir, 'rawx.ubx')
 
 ureader = UbloxReader(serialport='/dev/ttyS0', baudrate=115200, configdir=confdir)
 ulogger = UbloxMessageLogger(outputdir=logdir)
@@ -33,6 +33,8 @@ uprocessor.register_listener(UbloxProcessorEventType.SURVEY_DONE, ulogger.log_su
 
 #mqtt = GnssMqtt()
 
+fraw = open(f_raw, 'wb')
+
 for cfg in configs:
     print("Processing config ", cfg)
     ureader.apply_configfile(cfg)
@@ -40,6 +42,7 @@ for cfg in configs:
 while True:
     try:
         (raw_data, ubx_msg) = ureader.ubr.read()
+        fraw.write(raw_data)
         if not ureader.is_ubx_message(ubx_msg):
             continue
         print(ubx_msg.identity)
@@ -48,6 +51,8 @@ while True:
         #     print(msg.identity, msg.timestamp)
         #mqtt.publish(ubx_msg)
     except KeyboardInterrupt:
+        fraw.close()
         ureader.exit()
     except:
         pass
+fraw.close()

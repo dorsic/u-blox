@@ -24,6 +24,7 @@ class TimedUBXMessage(UBXMessage):
             towms = self.tow*1.0e3 if (hasattr(self, 'tow')) else -1.0
             towms = self.iTOW if (hasattr(self, 'iTOW')) else towms
             towms = self.towMS if (hasattr(self, 'towMS')) else towms
+            towms = self.rcvTow*1.0e3 if (hasattr(self, 'rcvTow')) else towms            
             if towms == -1.0:
                 return now      # not enought information
             ftow = self.fTOW if (hasattr(self, 'fTOW')) else 0.0
